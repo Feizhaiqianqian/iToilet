@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iToilet - 智能卫浴革命</title>
+    <style>
+        :root {
+            --primary: #007aff;
+            --primary-dark: #005bb5;
+            --accent: #34c759;
+            --dark: #333;
+            --light: #f8f8f8;
+            --gray: #666;
+            --light-gray: #eaeaea;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--dark);
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* 头部样式 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background-color: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-container img {
+            height: 45px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        
+        nav {
+            display: flex;
+            gap: 25px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 16px;
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        
+        nav a:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        nav a:hover:after {
+            width: 100%;
+        }
+        
+        .pull-string-container {
+            position: absolute;
+            top: -80px;
+            right: 20px;
+            width: 80px;
+            height: 380px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: hidden;
+            z-index: 100;
+        }
+        
+        .pull-string {
+            width: 70px;
+            height: 1500px;
+            background: url('string.png') no-repeat center top;
+            background-size: contain;
+            cursor: grab;
+            position: relative;
+            top: 0;
+            transition: transform 0.3s ease;
+        }
+        
+        .pull-string-handle {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(145deg, #ff9500, #ff7b00);
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        /* 英雄区域样式 */
+        .hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 140px 20px 100px;
+            background: url('hero-bg.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            color: white;
+            min-height: 90vh;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin: 0 0 20px;
+            letter-spacing: -1.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero .tagline {
+            font-size: 1.8rem;
+            margin: 0 0 50px;
+            max-width: 800px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .cta-button {
+            padding: 16px 42px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+        
+        .cta-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--primary-dark);
+            transition: var(--transition);
+            z-index: -1;
+        }
+        
+        .cta-button:hover:before {
+            width: 100%;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 122, 255, 0.6);
+        }
+        
+        /* 产品区域样式 */
+        .product-showcase {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.8rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .section-title p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 20px auto 0;
+        }
+        
+        .product-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .product {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .product:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        .product-image {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-image img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+        
+        .product:hover .product-image img {
+            transform: scale(1.05);
+        }
+        
+        .product-info {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .product h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .product p {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+        
+        .features {
+            margin: 40px auto;
+            max-width: 1200px;
+            padding: 60px 20px;
+            background: var(--light);
+            border-radius: 20px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+        
+        .feature-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        /* 页脚样式 */
+        footer {
+            background: linear-gradient(145deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 60px 20px 30px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-column h4 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h4:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-links i {
+            margin-right: 10px;
+            color: var(--primary);
+            width: 20px;
+        }
+        
+        .footer-links a {
+            color: #bbb;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            
+            .hero .tagline {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            nav {
+                margin-top: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .pull-string-container {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 60px;
+                height: 200px;
+            }
+            
+            .hero {
+                padding: 120px 20px 80px;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero .tagline {
+                font-size: 1.3rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .product-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes flushAnimation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(100px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .flush-active {
+            animation: flushAnimation 0.8s ease;
+        }
+        
+        .water-effect {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: rgba(0, 122, 255, 0.2);
+            z-index: 2;
+            transition: height 0.5s ease;
+        }
+        
+        .water-animation {
+            height: 100px;
+            animation: waterRise 0.8s ease-out;
+        }
+        
+        @keyframes waterRise {
+            0% { height: 0; opacity: 0; }
+            50% { height: 100px; opacity: 0.3; }
+            100% { height: 0; opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="logo.png" alt="iToilet">
+            <div class="logo-text">iToilet</div>
+        </div>
+        <nav>
+            <a href="#">主页</a>
+            <a href="#">产品</a>
+            <a href="#">支持</a>
+            <a href="#">联系我们</a>
+        </nav>
+        <div class="pull-string-container">
+            <div class="pull-string" id="pullString">
+                <div class="pull-string-handle">拉我</div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>iToilet®</h1>
+        <p class="tagline">Change Your Hole Life.</p>
+        <button class="cta-button">探索产品</button>
+    </section>
+
+    <div class="product-showcase">
+        <div class="section-title">
+            <h2>第一代</h2>
+            <p>革命性的起点，重新思考卫生间的未来</p>
+        </div>
+        
+        <div class="product-section">
+            <div class="product">
+                <div class="product-badge">经典产品</div>
+                <div class="product-image">
+                    <img src="itoilet1.jpg" alt="iToilet 1">
+                </div>
+                <div class="product-info">
+                    <h3>iToilet 1</h3>
+                    <p>基础功能的实现，智能马桶的起点</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-showcase">
+        <div class="section-title">
+            <h2>第二代</h2>
+            <p>创新升级，满足不同用户需求</p>
+        </div>
+        
+        <div class="product-section">
+            <div class="product">
+                <div class="product-badge">热卖</div>
+                <div class="product-image">
+                    <img src="itoilet_hifi.jpg" alt="iToilet Hi-Fi版">
+                </div>
+                <div class="product-info">
+                    <h3>iToilet Hi-Fi版</h3>
+                    <p>针对音乐发烧友的不二选择</p>
+                </div>
+            </div>
+            
+            <div class="product">
+                <div class="product-badge">热卖</div>
+                <div class="product-image">
+                    <img src="itoilet_bt.jpg" alt="iToilet 蓝牙版">
+                </div>
+                <div class="product-info">
+                    <h3>iToilet 蓝牙版</h3>
+                    <p>便捷连接，提升体验</p>
+                </div>
+            </div>
+            
+            <div class="product">
+                <div class="product-badge">家庭优选</div>
+                <div class="product-image">
+                    <img src="itoilet_home.jpg" alt="iToilet 家庭版">
+                </div>
+                <div class="product-info">
+                    <h3>iToilet 家庭版</h3>
+                    <p>实现"系列"互联的起点</p>
+                </div>
+            </div>
+            
+            <div class="product">
+                <div class="product-badge">创新设计</div>
+                <div class="product-image">
+                    <img src="itoilet_explore.jpg" alt="iToilet 探索版">
+                </div>
+                <div class="product-info">
+                    <h3>iToilet 探索版</h3>
+                    <p>透明结构满足您的"十万个为什么"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-showcase">
+        <div class="section-title">
+            <h2>第三代</h2>
+            <p>极致轻薄，科技与美学的完美结合</p>
+        </div>
+        
+        <div class="product-section">
+            <div class="product">
+                <div class="product-badge">旗舰产品</div>
+                <div class="product-image">
+                    <img src="itoilet_air.jpg" alt="iToilet Air">
+                </div>
+                <div class="product-info">
+                    <h3>iToilet Air</h3>
+                    <p>轻装上阵，开盖即屎</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="section-title">
+            <h2>创新功能</h2>
+            <p>iToilet系列产品带来的革命性体验</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">♪</div>
+                <h4>高保真音响</h4>
+                <p>Hi-Fi版专属，提供沉浸式音乐体验</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⎋</div>
+                <h4>智能互联</h4>
+                <p>蓝牙与家庭版支持多设备智能互联</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">👁️</div>
+                <h4>透明探索</h4>
+                <p>探索版透明设计展示内部工作原理</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⛁</div>
+                <h4>轻薄设计</h4>
+                <p>Air版极致轻薄，开盖即用的便捷体验</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>关于 iToilet</h4>
+                <p>我们致力于通过创新科技重新定义卫生间体验，打造智能、舒适、环保的如厕解决方案。</p>
+                <div class="social-links">
+                    <a href="#">微</a>
+                    <a href="#">抖</a>
+                    <a href="#">B</a>
+                    <a href="#">知</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h4>产品系列</h4>
+                <ul class="footer-links">
+                    <li><a href="#">iToilet 1</a></li>
+                    <li><a href="#">Hi-Fi 系列</a></li>
+                    <li><a href="#">蓝牙系列</a></li>
+                    <li><a href="#">家庭系列</a></li>
+                    <li><a href="#">iToilet Air</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>支持服务</h4>
+                <ul class="footer-links">
+                    <li><a href="#">产品手册</a></li>
+                    <li><a href="#">安装指南</a></li>
+                    <li><a href="#">故障排除</a></li>
+                    <li><a href="#">软件更新</a></li>
+                    <li><a href="#">保修政策</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>联系我们</h4>
+                <ul class="footer-links">
+                    <li><i>📞</i> 400-888-8888</li>
+                    <li><i>✉️</i> support@itoilet.com</li>
+                    <li><i>🏢</i> A市智能科技园区88号</li>
+                    <li><i>🕒</i> 周一至周五 9:00-18:00</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 iToilet Inc. 保留所有权利。沪ICP无备88888888号</p>
+        </div>
+    </footer>
+
+    <audio id="flush-sound" src="flush.mp3"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pullString = document.getElementById('pullString');
+            let startY = 0;
+            let isDragging = false;
+            let shouldFlush = false;
+            let maxPull = 0;
+            
+            pullString.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startY = e.clientY;
+                pullString.style.cursor = 'grabbing';
+                shouldFlush = false;
+                maxPull = 0;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const offset = e.clientY - startY;
+                if (offset > 0 && offset <= 100) {
+                    pullString.style.transform = `translateY(${offset}px)`;
+                    
+                    // 记录最大拉动距离
+                    if (offset > maxPull) {
+                        maxPull = offset;
+                    }
+                    
+                    // 实时检查是否达到冲水条件
+                    if (offset > 50) {
+                        shouldFlush = true;
+                    }
+                }
+            });
+            
+            document.addEventListener('mouseup', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                pullString.style.cursor = 'grab';
+                
+                // 使用最大拉动距离判断而不是最后位置
+                if (maxPull > 50) {
+                    playFlushSound();
+                    pullString.classList.add('flush-active');
+                    setTimeout(() => {
+                        pullString.classList.remove('flush-active');
+                    }, 800);
+                    
+                    // 添加水波纹效果
+                    const waterEffect = document.createElement('div');
+                    waterEffect.className = 'water-effect water-animation';
+                    document.body.appendChild(waterEffect);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(waterEffect);
+                    }, 800);
+                }
+                
+                pullString.style.transform = 'translateY(0)';
+            });
+            
+            // 添加触摸事件支持
+            pullString.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                shouldFlush = false;
+                maxPull = 0;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const offset = e.touches[0].clientY - startY;
+                if (offset > 0 && offset <= 100) {
+                    pullString.style.transform = `translateY(${offset}px)`;
+                    
+                    if (offset > maxPull) {
+                        maxPull = offset;
+                    }
+                    
+                    if (offset > 50) {
+                        shouldFlush = true;
+                    }
+                }
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                if (maxPull > 50) {
+                    playFlushSound();
+                    pullString.classList.add('flush-active');
+                    setTimeout(() => {
+                        pullString.classList.remove('flush-active');
+                    }, 800);
+                    
+                    // 添加水波纹效果
+                    const waterEffect = document.createElement('div');
+                    waterEffect.className = 'water-effect water-animation';
+                    document.body.appendChild(waterEffect);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(waterEffect);
+                    }, 800);
+                }
+                
+                pullString.style.transform = 'translateY(0)';
+                e.preventDefault();
+            });
+            
+            function playFlushSound() {
+                const sound = document.getElementById('flush-sound');
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("播放声音失败:", e));
+            }
+        });
+    </script>
+</body>
+</html>
